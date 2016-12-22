@@ -165,6 +165,8 @@ static class AnimeList
 
 					for (int i = 0; i < animeCount; i++)
 					{
+						Console.ForegroundColor = ConsoleColor.Green;
+
 						if (i > 9) { bt = "]"; } else { bt = " ]"; }
 						if (animeList[i]._episodeFinished == animeList[i]._episodeTotal) { Console.ForegroundColor = ConsoleColor.DarkGreen; }
 						else { Console.ForegroundColor = ConsoleColor.Green; }
@@ -180,8 +182,14 @@ static class AnimeList
 						{
 							Console.Write("[" + i.ToString() + bt + " (" + animeList[i]._episodeFinished + " | " + animeList[i]._episodeTotal + ") ");
 						}
+
+						if (animeList[i]._watchLink == "none" && animeList[i]._episodeFinished != animeList[i]._episodeTotal)
+						{ Console.ForegroundColor = ConsoleColor.Red; Console.Write("● "); }
+						else if (animeList[i]._episodeFinished != animeList[i]._episodeTotal) { Console.Write("● "); }
+
 						if (animeList[i]._episodeFinished == animeList[i]._episodeTotal) { Console.ForegroundColor = ConsoleColor.Gray; }
-						else { Console.ForegroundColor = ConsoleColor.White; }
+						else if (animeList[i]._episodeFinished == 0) { Console.ForegroundColor = ConsoleColor.White; }
+						else { Console.ForegroundColor = ConsoleColor.Cyan; }
 						Console.WriteLine(animeList[i]._name);
 					}
 					break;
@@ -211,19 +219,19 @@ static class AnimeList
 								if (!loading) break;
 								Console.Write("\b/");
 								if (!loading) break;
-								await Task.Delay(100);
+								await Task.Delay(70);
 								if (!loading) break;
 								Console.Write("\b-");
 								if (!loading) break;
-								await Task.Delay(100);
+								await Task.Delay(70);
 								if (!loading) break;
 								Console.Write("\b\\");
 								if (!loading) break;
-								await Task.Delay(100);
+								await Task.Delay(70);
 								if (!loading) break;
 								Console.Write("\b|");
 								if (!loading) break;
-								await Task.Delay(100);
+								await Task.Delay(70);
 							}
 						});
 						epCount = Convert.ToInt32(Regex.Match(web.DownloadString(args[1]), "<span id=\"curEps\">(.*)</span>").Groups[1].Value);
@@ -285,7 +293,7 @@ static class AnimeList
 				case "play":
 					if (animeList[Convert.ToInt32(args[1])]._watchLink == "none")
 					{
-						PrintError("Watch link not defined");
+						PrintError("Play link not defined");
 						break;
 					}
 					if (animeList[Convert.ToInt32(args[1])]._episodeTotal == animeList[Convert.ToInt32(args[1])]._episodeFinished)
@@ -334,6 +342,7 @@ static class AnimeList
 		string input;
 
 		Console.Title = "Anime Manager";
+		Console.OutputEncoding = System.Text.Encoding.UTF8;
 		Console.ForegroundColor = ConsoleColor.Green;
 		Console.WriteLine("Commands: " + CommandList);
 
