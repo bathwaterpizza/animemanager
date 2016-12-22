@@ -1,6 +1,6 @@
 # animemanager
 Anime Manager Console Application
 
-Personal project to keep track of Animes that I am watching
+Personal project to keep track of Animes that I am watching, I will not be documenting how to use this
 
-I will not be documenting how to use this
+For a ready to use .exe go to /bin/Release
