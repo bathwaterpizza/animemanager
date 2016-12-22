@@ -1,0 +1,6 @@
+C:\Users\root\Documents\Visual Studio 2015\Projects\AnimeList\AnimeList\bin\Release\AnimeList.exe.config
+C:\Users\root\Documents\Visual Studio 2015\Projects\AnimeList\AnimeList\bin\Release\AnimeList.exe
+C:\Users\root\Documents\Visual Studio 2015\Projects\AnimeList\AnimeList\bin\Release\AnimeList.pdb
+C:\Users\root\Documents\Visual Studio 2015\Projects\AnimeList\AnimeList\obj\Release\AnimeList.exe
+C:\Users\root\Documents\Visual Studio 2015\Projects\AnimeList\AnimeList\obj\Release\AnimeList.pdb
+C:\Users\root\Documents\Visual Studio 2015\Projects\AnimeList\AnimeList\obj\Release\AnimeList.csprojResolveAssemblyReference.cache

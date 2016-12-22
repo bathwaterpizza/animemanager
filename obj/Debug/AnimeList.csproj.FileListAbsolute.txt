@@ -1,0 +1,6 @@
+c:\users\root\documents\visual studio 2015\Projects\AnimeList\AnimeList\bin\Debug\AnimeList.exe.config
+C:\Users\root\documents\visual studio 2015\Projects\AnimeList\AnimeList\bin\Debug\AnimeList.exe
+C:\Users\root\documents\visual studio 2015\Projects\AnimeList\AnimeList\bin\Debug\AnimeList.pdb
+C:\Users\root\documents\visual studio 2015\Projects\AnimeList\AnimeList\obj\Debug\AnimeList.csprojResolveAssemblyReference.cache
+C:\Users\root\documents\visual studio 2015\Projects\AnimeList\AnimeList\obj\Debug\AnimeList.exe
+C:\Users\root\documents\visual studio 2015\Projects\AnimeList\AnimeList\obj\Debug\AnimeList.pdb
