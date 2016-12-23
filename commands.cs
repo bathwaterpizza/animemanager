@@ -1,147 +1,21 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Text.RegularExpressions;
+using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+using static AnimeList;
 
-static class AnimeList
+static class AnimeCommands
 {
-	static Anime[] animeList;
-	static int animeCount;
-	const int AnimeArray_size = 100; // max number of Anime entries
-	const string CommandList =
-		@"list, exit, cls, delall, add (link), del (index), upd (index) (ep/link), open (index), play (index)";
-
-	struct Anime
-	{
-		public string _link;
-		public string _name;
-		public string _watchLink;
-		public int _episodeFinished;
-		public int _episodeTotal;
-
-		public Anime(string link, int epTotal, int epFinish = 0, string watchLink = "none")
-		{
-			_name             = GetAnimeName(link);
-			_link             = link;
-			_episodeTotal     = epTotal;
-			_episodeFinished  = epFinish;
-			_watchLink        = watchLink;
-		}
-	}
-
-	static void SortAnimeList()
-	{
-		int index_w = 0, index_uw = 0, index_n = 0;
-		Anime[] animeData_w  = new Anime[animeCount];
-		Anime[] animeData_uw = new Anime[animeCount];
-		Anime[] animeDataNew = new Anime[AnimeArray_size];
-
-		for (int i = 0; i < animeCount; i++)
-		{
-			if (animeList[i]._episodeFinished == animeList[i]._episodeTotal)
-			{
-				animeData_w[index_w] = animeList[i];
-				index_w++;
-			}
-			else
-			{
-				animeData_uw[index_uw] = animeList[i];
-				index_uw++;
-			}
-		}
-
-		Anime[] _animeData_w  = new Anime[index_w];
-		Anime[] _animeData_uw = new Anime[index_uw];
-		Array.Copy(animeData_w, _animeData_w, index_w);
-		Array.Copy(animeData_uw, _animeData_uw, index_uw);
-		Array.Sort(_animeData_w,  (x, y) => string.Compare(x._name, y._name));
-		Array.Sort(_animeData_uw, (x, y) => string.Compare(x._name, y._name));
-
-		for (int i = 0; i < index_w; i++)
-		{
-			animeDataNew[index_n] = _animeData_w[i];
-			index_n++;
-		}
-		for (int i = 0; i < index_uw; i++)
-		{
-			animeDataNew[index_n] = _animeData_uw[i];
-			index_n++;
-		}
-
-		animeList = animeDataNew;
-	}
-
-	static void ReadAnimeList()
-	{
-		Anime[] animeData = new Anime[AnimeArray_size];
-
-		using (var file = new StreamReader("data/animelist.txt"))
-		{
-			string[] line;
-			int index = 0;
-
-			while (!file.EndOfStream)
-			{
-				line = file.ReadLine().Split('#');
-				if (line.Length == 3)
-				{
-					animeData[index] = new Anime(line[0], Convert.ToInt32(line[1]), Convert.ToInt32(line[2]));
-				}
-				else
-				{
-					animeData[index] = new Anime(line[0], Convert.ToInt32(line[1]), Convert.ToInt32(line[2]), line[3]);
-				}
-
-				index++;
-			}
-
-			animeCount = index;
-		}
-
-		animeList = animeData;
-	}
-
-	static void WriteAnimeList()
-	{
-		if (File.Exists("data/animelist.txt"))
-			File.Delete("data/animelist.txt");
-
-		SortAnimeList();
-
-		using (var file = new StreamWriter("data/animelist.txt"))
-		{
-			for (int i = 0; i < animeCount; i++)
-			{
-				file.WriteLine(animeList[i]._link + "#" + animeList[i]._episodeTotal.ToString() + "#" + 
-					animeList[i]._episodeFinished.ToString() + "#" + animeList[i]._watchLink);
-			}
-		}
-	}
-
-	static string GetAnimeName(string link)
-	{
-		string pattern = @"https://myanimelist.net/anime/.*/(.*)";
-
-		return Regex.Match(link, pattern).Groups[1].Value.Replace("_", " ");
-	}
-
-	static void PrintError(string err)
-	{
-		Console.ForegroundColor = ConsoleColor.Yellow;
-		Console.WriteLine("[ERROR] " + err);
-	}
-	
-	static void ParseCommand(string[] args)
+	public static void ParseRun(string[] args)
 	{
 		try
 		{
 			Console.ForegroundColor = ConsoleColor.Green;
-			ReadAnimeList();
+			AnimeIO.ReadAnimeList();
 
-			#region Commands
-
+			#region Command Switch
 			switch (args[0].ToLower())
 			{
 				case "cls":
@@ -203,7 +77,7 @@ static class AnimeList
 					{
 						if (animeList[i]._link == args[1])
 						{
-							PrintError("Anime already is in list");
+							AnimeUtil.PrintError("Anime already is in list");
 							return;
 						}
 					}
@@ -240,7 +114,7 @@ static class AnimeList
 
 					animeList[animeCount] = new Anime(args[1], epCount);
 					animeCount++;
-					WriteAnimeList();
+					AnimeIO.WriteAnimeList();
 
 					Console.WriteLine("\b\b\b\b\b\b\b\b\b\b\bAdded entry to AnimeList");
 					break;
@@ -262,7 +136,7 @@ static class AnimeList
 					}
 
 					animeList = animeData;
-					WriteAnimeList();
+					AnimeIO.WriteAnimeList();
 					Console.WriteLine("Deleted entry from AnimeList");
 					break;
 
@@ -281,7 +155,7 @@ static class AnimeList
 						animeList[Convert.ToInt32(args[1])]._episodeFinished = Convert.ToInt32(args[2]);
 					}
 
-					WriteAnimeList();
+					AnimeIO.WriteAnimeList();
 					Console.WriteLine("Updated entry in AnimeList");
 					break;
 
@@ -293,12 +167,12 @@ static class AnimeList
 				case "play":
 					if (animeList[Convert.ToInt32(args[1])]._watchLink == "none")
 					{
-						PrintError("Play link not defined");
+						AnimeUtil.PrintError("Play link not defined");
 						break;
 					}
 					if (animeList[Convert.ToInt32(args[1])]._episodeTotal == animeList[Convert.ToInt32(args[1])]._episodeFinished)
 					{
-						PrintError("No more episodes to watch");
+						AnimeUtil.PrintError("No more episodes to watch");
 						break;
 					}
 
@@ -307,60 +181,15 @@ static class AnimeList
 					break;
 
 				default:
-					PrintError("Unknown command");
+					AnimeUtil.PrintError("Unknown command");
 					Console.WriteLine("Commands: " + CommandList);
 					break;
 			}
-
-			#endregion Commands
+			#endregion Command Switch
 		}
 		catch (Exception ex)
 		{
-			PrintError("Bad Input (" + ex.Message + ")");
+			AnimeUtil.PrintError("Bad Input (" + ex.Message + ")");
 		}
-	}
-
-	static void InitializeFiles()
-	{
-		Console.ForegroundColor = ConsoleColor.Yellow;
-
-		if (!Directory.Exists("data"))
-		{
-			Directory.CreateDirectory("data");
-			Console.WriteLine("[SYSTEM] Created directory \"data\"");
-		}
-		if (!File.Exists("data/animelist.txt"))
-		{
-			FileStream fs = File.Create("data/animelist.txt");
-			fs.Close(); fs.Dispose();
-			Console.WriteLine("[SYSTEM] Created file \"animelist.txt\"");
-		}
-	}
-
-	static void Main()
-	{
-		string input;
-
-		Console.Title = "Anime Manager";
-		Console.OutputEncoding = System.Text.Encoding.UTF8;
-		Console.ForegroundColor = ConsoleColor.Green;
-		Console.WriteLine("Commands: " + CommandList);
-
-		InitializeFiles(); // creates data files if necessary
-
-		Console.WriteLine(); ParseCommand(new string[] { "list" });
-
-		while (true)
-		{
-			Console.ForegroundColor = ConsoleColor.Red;
-			Console.Write("\n> ");
-
-			input = Console.ReadLine();
-			if (input == "exit") break;
-
-			ParseCommand(input.Split(' '));
-		}
-
-		Environment.Exit(0);
 	}
 }
