@@ -5,9 +5,9 @@ static class AnimeList
 {
 	public static Anime[] animeList;
 	public static int animeCount;
-	public const int AnimeArray_size = 100; // max number of Anime entries
+	public const int AnimeArray_size = 256; // max number of Anime entries
 	public const string CommandList = 
-		@"list, exit, cls, delall, add (link), del (index), upd (index) (ep/link), open (index), play (index)";
+		@"list, exit, cls, purge, add (link), del (index), upd (index) (ep/link), open (index), play (index)";
 
 	public class Anime
 	{

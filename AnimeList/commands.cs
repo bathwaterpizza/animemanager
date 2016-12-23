@@ -22,7 +22,7 @@ static class AnimeCommands
 					Console.Clear();
 					break;
 
-				case "delall":
+				case "purge":
 					FileStream fs = File.Create("data/animelist.txt");
 					fs.Close(); fs.Dispose();
 					Console.WriteLine("Deleted all entries in AnimeList");
@@ -39,23 +39,23 @@ static class AnimeCommands
 
 					for (int i = 0; i < animeCount; i++)
 					{
-						Console.ForegroundColor = ConsoleColor.Green;
-
-						if (i > 9) { bt = "]"; } else { bt = " ]"; }
 						if (animeList[i]._episodeFinished == animeList[i]._episodeTotal) { Console.ForegroundColor = ConsoleColor.DarkGreen; }
 						else { Console.ForegroundColor = ConsoleColor.Green; }
+
+						if (i > 99) { bt = "]"; } else if (i > 9) { bt = " ]"; } else { bt = "  ]"; }
+
 						if (animeList[i]._episodeTotal < 10)
-						{
-							Console.Write("[" + i.ToString() + bt + " (" + animeList[i]._episodeFinished + "  | " + animeList[i]._episodeTotal + " ) ");
-						}
-						else if (animeList[i]._episodeFinished < 10)
-						{
+							Console.Write("[" + i.ToString() + bt + " (" + animeList[i]._episodeFinished + "  |  " + animeList[i]._episodeTotal + ") ");
+						else if (animeList[i]._episodeFinished < 10 && animeList[i]._episodeTotal < 100)
 							Console.Write("[" + i.ToString() + bt + " (" + animeList[i]._episodeFinished + "  | " + animeList[i]._episodeTotal + ") ");
-						}
-						else
-						{
+						else if (animeList[i]._episodeTotal < 100)
 							Console.Write("[" + i.ToString() + bt + " (" + animeList[i]._episodeFinished + " | " + animeList[i]._episodeTotal + ") ");
-						}
+						else if (animeList[i]._episodeFinished < 10)
+							Console.Write("[" + i.ToString() + bt + " (" + animeList[i]._episodeFinished + "  |" + animeList[i]._episodeTotal + ") ");
+						else if (animeList[i]._episodeFinished < 100)
+							Console.Write("[" + i.ToString() + bt + " (" + animeList[i]._episodeFinished + " |" + animeList[i]._episodeTotal + ") ");
+						else
+							Console.Write("[" + i.ToString() + bt + " (" + animeList[i]._episodeFinished + "|" + animeList[i]._episodeTotal + ") ");
 
 						if (animeList[i]._watchLink == "none" && animeList[i]._episodeFinished != animeList[i]._episodeTotal)
 						{ Console.ForegroundColor = ConsoleColor.Red; Console.Write("● "); }
@@ -70,6 +70,7 @@ static class AnimeCommands
 
 				case "add":
 					if (!args[1].StartsWith("https://myanimelist.net/anime/")) { throw new ArgumentException("Invalid MyAnimeList.net URL"); }
+					if (animeCount >= AnimeArray_size) { throw new ArgumentException("AnimeList is full (max: " + AnimeArray_size.ToString() + ")"); }
 
 					int epCount;
 
@@ -85,6 +86,7 @@ static class AnimeCommands
 					using (var web = new WebClient())
 					{
 						bool loading = true;
+
 						Console.Write("Working.. |");
 						Task task = Task.Run(async () => // fancy loading effect
 						{
@@ -108,6 +110,7 @@ static class AnimeCommands
 								await Task.Delay(70);
 							}
 						});
+
 						epCount = Convert.ToInt32(Regex.Match(web.DownloadString(args[1]), "<span id=\"curEps\">(.*)</span>").Groups[1].Value);
 						loading = false;
 					}
