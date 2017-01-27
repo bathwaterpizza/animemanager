@@ -61,7 +61,8 @@ static class AnimeCommands
 						{ Console.ForegroundColor = ConsoleColor.Red; Console.Write("● "); }
 						else if (animeList[i]._episodeFinished != animeList[i]._episodeTotal) { Console.Write("● "); }
 
-						if (animeList[i]._episodeFinished == animeList[i]._episodeTotal) { Console.ForegroundColor = ConsoleColor.Gray; }
+						if (animeList[i]._episodeTotal == 999) { Console.ForegroundColor = ConsoleColor.Yellow; }
+						else if (animeList[i]._episodeFinished == animeList[i]._episodeTotal) { Console.ForegroundColor = ConsoleColor.Gray; }
 						else if (animeList[i]._episodeFinished == 0) { Console.ForegroundColor = ConsoleColor.White; }
 						else { Console.ForegroundColor = ConsoleColor.Cyan; }
 						Console.WriteLine(animeList[i]._name);
@@ -111,7 +112,13 @@ static class AnimeCommands
 							}
 						});
 
-						epCount = Convert.ToInt32(Regex.Match(web.DownloadString(args[1]), "<span id=\"curEps\">(.*)</span>").Groups[1].Value);
+						string epString = Regex.Match(web.DownloadString(args[1]), "<span id=\"curEps\">(.*)</span>").Groups[1].Value;
+
+						if (epString == "?")
+							epCount = 999;
+						else
+							epCount = Convert.ToInt32(epString);
+
 						loading = false;
 					}
 
@@ -193,6 +200,7 @@ static class AnimeCommands
 		catch (Exception ex)
 		{
 			AnimeUtil.PrintError("Bad Input (" + ex.Message + ")");
+			Console.WriteLine(ex.ToString());
 		}
 	}
 }
